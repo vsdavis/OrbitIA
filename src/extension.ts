@@ -1,18 +1,20 @@
 import * as vscode from 'vscode';
 
-// Use o import dinâmico dentro de uma função assíncrona
+// Variável para armazenar a função fetch
 let fetch: any;
 
+// Função para carregar dinamicamente o módulo node-fetch
 async function loadFetch() {
   fetch = (await import('node-fetch')).default;
+  console.log('fetch carregado com sucesso.');
 }
 
 // Método chamado quando a extensão é ativada
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   console.log('Parabéns, sua extensão "orbitia" está ativa!');
 
-  // Chama a função para carregar o fetch
-  loadFetch();
+  // Chama a função para carregar o fetch de forma assíncrona
+  await loadFetch();
 
   // Comando Hello World
   const disposable = vscode.commands.registerCommand('orbitia.helloWorld', () => {
@@ -22,24 +24,29 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Comando para abrir o chatbot
   const chatDisposable = vscode.commands.registerCommand('orbitia.openChat', async () => {
+    console.log('Comando openChat chamado');
+
     const panel = vscode.window.createWebviewPanel(
-      'orbitiaChat',
-      'OrbitIA Chatbot',
-      vscode.ViewColumn.One,
-      {}
+        'orbitiaChat',
+        'OrbitIA Chatbot',
+        vscode.ViewColumn.One,
+        {}
     );
 
+    // Garantir que o WebView tenha o conteúdo HTML
     panel.webview.html = getWebviewContent();
+    console.log('Webview do chatbot gerado');
 
     panel.webview.onDidReceiveMessage(
-      async (message) => {
-        if (message.command === 'askAI') {
-          const aiResponse = await fetchAIResponse(message.text);
-          panel.webview.postMessage({ command: 'aiResponse', text: aiResponse });
-        }
-      },
-      undefined,
-      context.subscriptions
+        async (message) => {
+            console.log('Mensagem recebida do WebView:', message);
+            if (message.command === 'askAI') {
+                const aiResponse = await fetchAIResponse(message.text); // Função que chama a API
+                panel.webview.postMessage({ command: 'aiResponse', text: aiResponse });
+            }
+        },
+        undefined,
+        context.subscriptions
     );
   });
   context.subscriptions.push(chatDisposable);
@@ -47,34 +54,36 @@ export function activate(context: vscode.ExtensionContext) {
 
 // Função de requisição à API
 export async function fetchAIResponse(input: string): Promise<string> {
-  // Espera o fetch ser carregado antes de fazer a requisição
   if (!fetch) {
     return 'Erro: fetch não foi carregado.';
   }
 
-  const response = await fetch('https://api.gemini.com/ai-endpoint', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ` // Substitua pela sua chave
-    },
-    body: JSON.stringify({ prompt: input })
-  });
+  try {
+    const response = await fetch('https://api.gemini.com/ai-endpoint', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer AIzaSyCwHKFDxBIwJtyc9UQpQ1KIRUcxmLS7cS0`
+      },
+      body: JSON.stringify({ prompt: input })
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  // Tipar a resposta de maneira adequada
-  if (data && typeof data.generatedText === 'string') {
-    return data.generatedText;
-  } else {
-    return 'Erro ao obter resposta';
+    if (data && typeof data.generatedText === 'string') {
+      return data.generatedText;
+    } else {
+      return 'Erro ao obter resposta da AI';
+    }
+  } catch (error) {
+    console.error('Erro na requisição da API:', error);
+    return 'Erro ao fazer requisição à API';
   }
 }
 
 // Função para fornecer o HTML do chatbot
 function getWebviewContent(): string {
   return `
-  
   <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -193,7 +202,6 @@ function getWebviewContent(): string {
     </script>
 </body>
 </html>
-
   `;
 }
 
