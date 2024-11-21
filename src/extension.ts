@@ -63,7 +63,7 @@ export async function fetchAIResponse(input: string): Promise<string> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer `
+        'Authorization': `Bearer Aqui colocarei a chave`
       },
       body: JSON.stringify({ prompt: input })
     });
