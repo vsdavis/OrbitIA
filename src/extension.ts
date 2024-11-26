@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Inicialização do modelo generativo
-const apiKey = process.env.GEMINI_API_KEY || "AIzaSyDColT7u15xZU2Az-OZIdMBRqWpuu0e2rA";
+const apiKey = process.env.GEMINI_API_KEY || "AIzaSyDColT7u15xZU2Az-OZIdMBRqWpuu0e2r";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
@@ -26,12 +26,22 @@ export async function fetchAIResponse(input: string): Promise<string> {
 
     const result = await chatSession.sendMessage(input);
 
-    return result.response?.text || "Nenhuma resposta foi gerada.";
+    const text = typeof result.response?.text === "function"
+      ? result.response.text()
+      : result.response?.text;
+
+    return text ?? "Nenhuma resposta foi gerada.";
   } catch (error) {
-    console.error("Erro na API Gemini:", error.message);
-    return `Erro ao processar sua solicitação: ${error.message}`;
+    if (error instanceof Error) {
+      console.error("Erro na API Gemini:", error.message);
+      return `Erro ao processar sua solicitação: ${error.message}`;
+    } else {
+      console.error("Erro desconhecido na API Gemini:", error);
+      return "Erro desconhecido ao processar sua solicitação.";
+    }
   }
 }
+
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('Parabéns, sua extensão "orbitia" está ativa!');
@@ -67,39 +77,6 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(chatDisposable);
 }
 
-<<<<<<< HEAD
-// Função de requisição à API
-export async function fetchAIResponse(input: string): Promise<string> {
-  if (!nodeFetch) {
-    return 'Erro: node-fetch não foi carregado.';
-  }
-
-  try {
-    const response = await nodeFetch('https://api.gemini.com/ai-endpoint', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer `
-      },
-      body: JSON.stringify({ prompt: input })
-    });
-
-    const data = await response.json();
-
-    if (data && typeof data.generatedText === 'string') {
-      return data.generatedText;
-    } else {
-      return 'Erro ao obter resposta da AI';
-    }
-  } catch (error) {
-    console.error('Erro na requisição da API:', error);
-    return 'Erro ao fazer requisição à API';
-  }
-}
-
-// Função para fornecer o HTML do chatbot
-=======
->>>>>>> 4133c8d (fazendo a importação do gemini no codigo(teste))
 function getWebviewContent(): string {
   return `
 <!DOCTYPE html>
@@ -225,6 +202,3 @@ function getWebviewContent(): string {
 
 // Função de desativação
 export function deactivate() {}
-
-
-//o erro estava numa declaração global no fecht

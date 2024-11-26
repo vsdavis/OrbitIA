@@ -1,10 +1,10 @@
 {
+
   "type": "commonjs",
   "name": "orbitia",
   "displayName": "orbitIA",
   "description": "VS Code extension using AI",
   "version": "0.0.1",
-  "publisher": "SeuNome",  
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -13,8 +13,7 @@
   ],
   "activationEvents": [
     "onCommand:orbitia.openChat",
-    "onCommand:orbitia.helloWorld"  
-  ],
+      ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -52,6 +51,9 @@
 >>>>>>> 4133c8d (fazendo a importação do gemini no codigo(teste))
   }
 }
+
+
+
 
 
 
