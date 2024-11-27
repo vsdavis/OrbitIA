@@ -1,58 +1,73 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Variável para armazenar a função fetch de forma segura
-let nodeFetch: any;
+// Inicialização do modelo generativo
+const apiKey = process.env.GEMINI_API_KEY || "AIzaSyDColT7u15xZU2Az-OZIdMBRqWpuu0e2rA";
+const genAI = new GoogleGenerativeAI(apiKey);
 
-// Função para carregar dinamicamente o módulo node-fetch
-async function loadFetch() {
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+});
+
+const generationConfig = {
+  temperature: 1,
+  topP: 0.95,
+  topK: 40,
+  maxOutputTokens: 8192,
+  responseMimeType: "text/plain",
+};
+
+export async function fetchAIResponse(input: string): Promise<string> {
   try {
-    nodeFetch = (await import('node-fetch')).default;
-    console.log('node-fetch carregado com sucesso.');
+    const chatSession = model.startChat({
+      generationConfig,
+      history: [],
+    });
+
+    const result = await chatSession.sendMessage(input);
+
+    return result.response?.text || "Nenhuma resposta foi gerada.";
   } catch (error) {
-    console.error('Erro ao carregar node-fetch:', error);
+    console.error("Erro na API Gemini:", error.message);
+    return `Erro ao processar sua solicitação: ${error.message}`;
   }
 }
 
-// Método chamado quando a extensão é ativada
 export async function activate(context: vscode.ExtensionContext) {
   console.log('Parabéns, sua extensão "orbitia" está ativa!');
 
-  // Chama a função para carregar o fetch de forma assíncrona
-  await loadFetch();
+  const chatDisposable = vscode.commands.registerCommand(
+    "orbitia.openChat",
+    async () => {
+      const panel = vscode.window.createWebviewPanel(
+        "orbitiaChat",
+        "OrbitIA Chatbot",
+        vscode.ViewColumn.One,
+        {}
+      );
 
-  // Comando Hello World
-  const disposable = vscode.commands.registerCommand('orbitia.helloWorld', () => {
-    vscode.window.showInformationMessage('Hello World from orbitIA!');
-  });
-  context.subscriptions.push(disposable);
+      panel.webview.html = getWebviewContent();
 
-  // Comando para abrir o chatbot
-  const chatDisposable = vscode.commands.registerCommand('orbitia.openChat', async () => {
-    const panel = vscode.window.createWebviewPanel(
-      'orbitiaChat',
-      'OrbitIA Chatbot',
-      vscode.ViewColumn.One,
-      {}
-    );
+      panel.webview.onDidReceiveMessage(
+        async (message) => {
+          if (message.command === "askAI") {
+            const aiResponse = await fetchAIResponse(message.text);
+            panel.webview.postMessage({
+              command: "aiResponse",
+              text: aiResponse,
+            });
+          }
+        },
+        undefined,
+        context.subscriptions
+      );
+    }
+  );
 
-    // Define o HTML do WebView
-    panel.webview.html = getWebviewContent();
-
-    // Listener para receber mensagens do WebView
-    panel.webview.onDidReceiveMessage(
-      async (message) => {
-        if (message.command === 'askAI') {
-          const aiResponse = await fetchAIResponse(message.text);
-          panel.webview.postMessage({ command: 'aiResponse', text: aiResponse });
-        }
-      },
-      undefined,
-      context.subscriptions
-    );
-  });
   context.subscriptions.push(chatDisposable);
 }
 
+<<<<<<< HEAD
 // Função de requisição à API
 export async function fetchAIResponse(input: string): Promise<string> {
   if (!nodeFetch) {
@@ -83,6 +98,8 @@ export async function fetchAIResponse(input: string): Promise<string> {
 }
 
 // Função para fornecer o HTML do chatbot
+=======
+>>>>>>> 4133c8d (fazendo a importação do gemini no codigo(teste))
 function getWebviewContent(): string {
   return `
 <!DOCTYPE html>

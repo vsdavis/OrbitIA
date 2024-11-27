@@ -44,7 +44,12 @@
     "@vscode/test-electron": "^2.4.1"
   },
   "dependencies": {
+<<<<<<< HEAD
     "node-fetch": "^3.0.0"
+=======
+    "@google/generative-ai": "^0.21.0",
+    "node-fetch": "^3.3.2"
+>>>>>>> 4133c8d (fazendo a importação do gemini no codigo(teste))
   }
 }
 
