@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Inicialização do modelo generativo
-const apiKey = process.env.GEMINI_API_KEY || "AIzaSyDColT7u15xZU2Az-OZIdMBRqWpuu0e2r";
+const apiKey = process.env.GEMINI_API_KEY || "AIzaSyDColT7u15xZU2Az-OZIdMBRqWpuu0e2r";  // Substitua pela sua chave real
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
@@ -26,6 +26,7 @@ export async function fetchAIResponse(input: string): Promise<string> {
 
     const result = await chatSession.sendMessage(input);
 
+    // Tratamento de resposta: verifique se o texto é uma função ou uma string
     const text = typeof result.response?.text === "function"
       ? result.response.text()
       : result.response?.text;
