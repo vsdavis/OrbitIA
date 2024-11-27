@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Inicialização do modelo generativo
-const apiKey = process.env.GEMINI_API_KEY || "AIzaSyDColT7u15xZU2Az-OZIdMBRqWpuu0e2rA";
+const apiKey = process.env.GEMINI_API_KEY || "colocar a chave aqui";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
@@ -17,6 +17,7 @@ const generationConfig = {
   responseMimeType: "text/plain",
 };
 
+
 export async function fetchAIResponse(input: string): Promise<string> {
   try {
     const chatSession = model.startChat({
@@ -26,10 +27,15 @@ export async function fetchAIResponse(input: string): Promise<string> {
 
     const result = await chatSession.sendMessage(input);
 
-    return result.response?.text || "Nenhuma resposta foi gerada.";
+    return result.response?.text ?? "Nenhuma resposta foi gerada.";
   } catch (error) {
-    console.error("Erro na API Gemini:", error.message);
-    return `Erro ao processar sua solicitação: ${error.message}`;
+    if (error instanceof Error) {
+      console.error("Erro na API Gemini:", error.message);
+      return `Erro ao processar sua solicitação: ${error.message}`;
+    } else {
+      console.error("Erro desconhecido na API Gemini:", error);
+      return "Erro desconhecido ao processar sua solicitação.";
+    }
   }
 }
 
@@ -192,6 +198,3 @@ function getWebviewContent(): string {
 
 // Função de desativação
 export function deactivate() {}
-
-
-//o erro estava numa declaração global no fecht
