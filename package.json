@@ -44,8 +44,11 @@
   },
   "dependencies": {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "node-fetch": "^3.0.0"
 =======
+=======
+>>>>>>> 3bf88d978785e698a1408ff7162a1b14d5ab33a1
     "@google/generative-ai": "^0.21.0",
     "node-fetch": "^3.3.2"
 >>>>>>> 4133c8d (fazendo a importação do gemini no codigo(teste))
