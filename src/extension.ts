@@ -4,6 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 // Inicialização do modelo generativo
 
 const apiKey = process.env.GEMINI_API_KEY || "AIzaSyDColT7u15xZU2Az-OZIdMBRqWpuu0e2r";  // Substitua pela sua chave real
+const apiKey = process.env.GEMINI_API_KEY || "colocar a chave aqui";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
@@ -35,6 +36,9 @@ export async function fetchAIResponse(input: string): Promise<string> {
     return text ?? "Nenhuma resposta foi gerada.";
 
     return result.response?.text() ?? "Nenhuma resposta foi gerada.";
+
+    return result.response?.text ?? "Nenhuma resposta foi gerada.";
+
   } catch (error) {
     if (error instanceof Error) {
       console.error("Erro na API Gemini:", error.message);
