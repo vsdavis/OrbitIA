@@ -2,11 +2,8 @@ import * as vscode from "vscode";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Inicialização do modelo generativo
-<<<<<<< HEAD
+
 const apiKey = process.env.GEMINI_API_KEY || "AIzaSyDColT7u15xZU2Az-OZIdMBRqWpuu0e2r";  // Substitua pela sua chave real
-=======
-const apiKey = process.env.GEMINI_API_KEY || "colocar a chave aqui";
->>>>>>> 3bf88d978785e698a1408ff7162a1b14d5ab33a1
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
@@ -21,10 +18,6 @@ const generationConfig = {
   responseMimeType: "text/plain",
 };
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 3bf88d978785e698a1408ff7162a1b14d5ab33a1
 export async function fetchAIResponse(input: string): Promise<string> {
   try {
     const chatSession = model.startChat({
@@ -34,16 +27,14 @@ export async function fetchAIResponse(input: string): Promise<string> {
 
     const result = await chatSession.sendMessage(input);
 
-<<<<<<< HEAD
     // Tratamento de resposta: verifique se o texto é uma função ou uma string
     const text = typeof result.response?.text === "function"
       ? result.response.text()
       : result.response?.text;
 
     return text ?? "Nenhuma resposta foi gerada.";
-=======
-    return result.response?.text ?? "Nenhuma resposta foi gerada.";
->>>>>>> 3bf88d978785e698a1408ff7162a1b14d5ab33a1
+
+    return result.response?.text() ?? "Nenhuma resposta foi gerada.";
   } catch (error) {
     if (error instanceof Error) {
       console.error("Erro na API Gemini:", error.message);
@@ -55,10 +46,6 @@ export async function fetchAIResponse(input: string): Promise<string> {
   }
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 3bf88d978785e698a1408ff7162a1b14d5ab33a1
 export async function activate(context: vscode.ExtensionContext) {
   console.log('Parabéns, sua extensão "orbitia" está ativa!');
 
